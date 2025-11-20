@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Aqyl.run — Каталог</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="catalog.css">
+  <link rel="icon" type="" href="img/logo.png">
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Q6EH2PJ601"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Q6EH2PJ601');
+</script>
+<!-- Chatbase style overrides -->
+<style id="chatbase-overrides">
+  /* Увеличиваем кнопку-launcher */
+  #chatbase-bubble-button {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgb(0, 174, 255) !important;
+    background: #d8f0fb !important; /* цвет кнопки — тот же, что хедер */
+    border: none !important;
+    z-index: 2147483647 !important;
+    transform: translateZ(0);
+  }
+.cb-footer, 
+.cb-chat-footer, 
+.cb-powered-by, 
+.cb_pf { 
+    display:none !important;
+}
+  /* Подгоняем иконку внутри кнопки */
+/* уменьшаем стрелку в header Chatbase */
+#chatbase-bubble-window .chatbase-header svg,
+#chatbase-bubble-window .chatbase-header img {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+
+  /* Контейнер окна чата (внешняя обёртка) */
+  #chatbase-bubble-window {
+    background: #262727 !important; /* фон окна */
+    color: #ffffff !important;
+    border-radius: 30px !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 60px rgba(0, 174, 255, 0.45) !important;
+    z-index: 2147483646 !important;
+  }
+
+  /* Если существует заголовок/хедер в внешнем DOM */
+  #chatbase-bubble-window .chatbase-header,
+  #chatbase-bubble-window .header,
+  #chatbase-bubble-window .chat-header,
+  #chatbase-bubble-window .bubble-header {
+    background: #000000 !important; /* хедер */
+    color: #ffffff !important;
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+  }
+
+  /* Мобильная компенсация — чтобы кнопка не занимала слишком много экрана */
+  @media (max-width: 480px) {
+    #chatbase-bubble-button {
+      width: 64px !important;
+      height: 64px !important;
+    }
+    #chatbase-bubble-button img,
+    #chatbase-bubble-button svg {
+      width: 36px !important;
+      height: 36px !important;
+    }
+  }
+</style>
+
+<!-- Попытка инжектнуть стили внутрь iframe, если iframe доступен same-origin.
+     Если iframe cross-origin — постмессед либо инъекция не сработают,
+     но внешние элементы всё равно будут оформлены. -->
+<script>
+(function(){
+  const cssText = document.getElementById('chatbase-overrides').innerText;
+  function injectToIframe(iframe){
+    if(!iframe) return false;
+    try{
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if(!doc) return false;
+      const s = doc.createElement('style');
+      s.setAttribute('data-from','page-chatbase-override');
+      s.innerHTML = cssText;
+      doc.head && doc.head.appendChild(s);
+      console.log('[chatbase override] injected into iframe (same-origin).');
+      return true;
+    }catch(err){
+      console.warn('[chatbase override] cannot access iframe document (probably cross-origin).', err);
+      // Fallback: try postMessage — embed might listen for such messages (depends on Chatbase impl).
+      try{
+        iframe.contentWindow.postMessage({ type: 'CHATBASE:INJECT_CSS', css: cssText }, '*');
+        console.log('[chatbase override] posted message to iframe (fallback).');
+      }catch(e){ /* ignore */ }
+      return false;
+    }
+  }
+
+  function findIframeAndInject(){
+    // iframe может находиться внутри #chatbase-bubble-window или вложен по-другому
+    const container = document.getElementById('chatbase-bubble-window');
+    if(container){
+      const ifr = container.querySelector('iframe');
+      if(ifr) return injectToIframe(ifr);
+    }
+    // еще пробуем найти любой iframe, который был добавлен скриптом Chatbase
+    const anyIframe = document.querySelector('iframe[src*="chatbase"]') || document.querySelector('iframe');
+    if(anyIframe) return injectToIframe(anyIframe);
+    return false;
+  }
+
+  // Попытки: при загрузке страницы и через сообщения "iframeReady"
+  window.addEventListener('message', (ev) => {
+    // если embed шлёт сообщение о готовности, попробуем инжект
+    try{
+      const data = ev.data;
+      if(typeof data === 'object' && (data === 'iframeReady' || data?.type === 'iframeReady' || data?.type === 'IFRAME_READY')){
+        setTimeout(findIframeAndInject, 300);
+      }
+      // В некоторых реализациях embed принимает {type:'INJECT_CSS'} — мы уже посылаем такое сообщение в catch
+    }catch(e){}
+  });
+
+  // Также запускаем через таймауты — на случай если iframe создаётся позже
+  setTimeout(findIframeAndInject, 1000);
+  setTimeout(findIframeAndInject, 3000);
+  setTimeout(findIframeAndInject, 7000);
+})();
+</script>
+</head>
+<body>
+  <div class="container">
+    <!-- === Хедер === -->
+    <header id="siteHeader">
+      <div class="brand">
+                <div class="logo">
+          
+          <!-- Лампа (түнгі режим) -->
+<div style="position:fixed;bottom:24px;left:24px;z-index:1200;">
+  <button id="themeLamp" class="theme-lamp" title="Түнгі/Күндізгі режим">
+    <img id="lampIcon" src="img/logo.png" alt="Theme" />
+  </button>
+</div>
+<script>
+(function(){
+  const body = document.body;
+  const lamp = document.getElementById('themeLamp');
+  const lampIcon = document.getElementById('lampIcon');
+  const footerLogo = document.getElementById('footerLogo');
+  const saved = localStorage.getItem('aqyl_theme');
+
+  // Функция для обновления логотипов
+  function updateLogos(isDark) {
+    lampIcon.src = isDark ? 'img/logo.png' : 'img/darklogo.png';
+    footerLogo.src = isDark ? 'img/logo.png' : 'img/darklogo.png';
+  }
+
+  // Настройка при загрузке
+  const isDarkStart = (saved === 'dark');
+  if (isDarkStart) body.classList.add('dark');
+  updateLogos(isDarkStart);
+
+  // Переключатель темы
+  lamp.addEventListener('click', () => {
+    body.classList.toggle('dark');
+    const isDark = body.classList.contains('dark');
+    localStorage.setItem('aqyl_theme', isDark ? 'dark' : 'light');
+    updateLogos(isDark);
+  });
+})();
+</script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const openModal = document.getElementById('open-modal');
+    const closeModal = document.getElementById('close-modal');
+    const modalBg = document.getElementById('modal-bg');
+
+    openModal.addEventListener('click', (e) => {
+      e.preventDefault();
+      modalBg.classList.add('show');
+      modalBg.setAttribute('aria-hidden', 'false');
+    });
+
+    closeModal.addEventListener('click', () => {
+      modalBg.classList.remove('show');
+      modalBg.setAttribute('aria-hidden', 'true');
+    });
+
+    modalBg.addEventListener('click', (e) => {
+      if (e.target === modalBg) {
+        modalBg.classList.remove('show');
+        modalBg.setAttribute('aria-hidden', 'true');
+      }
+    });
+  });
+  </script>
+        </div>
+        <h1>Aqyl.run</h1>
+      </div>
+      <nav>
+        <a  href="course.html">Басты</a>
+        <a style="color: red;" href="catalog.html">Курстар</a>
+        <a href="link.html">Байланыс</a>
+        <a class="pill" href="#" id="open-modal">Тіркелу</a>
+
+          <!-- Patch bell -->
+  <div class="patch-bell" id="patchBell" aria-haspopup="true" aria-expanded="false">
+    <button id="bellBtn" class="patch-bell-btn" aria-label="Patch notes">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M15 17H9a3 3 0 0 1-3-3V10a6 6 0 1 1 12 0v4a3 3 0 0 1-3 3z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="patch-badge" id="patchBadge" aria-hidden="true"></span>
+    </button>
+
+    <div class="patch-popup" id="patchPopup" role="dialog" aria-labelledby="patchTitle" aria-hidden="true">
+      <div class="patch-popup-inner">
+        <div class="patch-title" id="patchTitle">📢 Aqyl.run Patch — тарихи нұсқалар</div>
+        <ul class="patch-list" id="patchList">
+          <!-- JS заполнит список версий -->
+        </ul>
+      </div>
+    </div>
+  </div>
+      </nav>
+    </header>
+
+    <!-- === Каталог секциясы === -->
+      <!-- курс -->
+      <section id="courses">
+        <h3>Біздің Курстар</h3>
+        <div class="course-grid">
+          <div class="course">
+            <img src="https://images.unsplash.com/photo-1553484771-371a605b060b?q=80&w=800" alt="">
+    <h3>Python-бағдарлама негіздері</h3>
+    <p class="instructor">🧑‍💻 Мұғалім: <strong>Темірлан K1yotaka</strong></p>
+    <div class="meta">
+      <span class="price">💰45  000 ₸</span>
+      <span class="rating">⭐ ♾️ / 100</span>
+    </div>
+    <p class="desc">Python тілін нөлден бастап үйреніңіз: айнымалылар, шарттар, циклдер, функциялар және кішкентай жобалар жасау.</p>
+    <a href="#" class="btn">Курсты бастау</a>
+          </div>
+          <div class="course">
+            <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800" alt="">
+    <h3>Web-әзірлеу негіздері</h3>
+    <p class="instructor">🧑‍💻 Мұғалім: <strong>Нурасыл 1лвл фейсит</strong></p>
+    <div class="meta">
+      <span class="price">💰 554545 000 ₸ (қымбат щщ)</span>
+      <span class="rating">⭐ -10 / 10</span>
+    </div>
+    <p class="desc">HTML, CSS және JavaScript арқылы веб-сайттар жасауды үйреніңіз.  
+      Сайт құрылымынан бастап интерактивті интерфейске дейін толық курс.</p>
+    <a href="#" class="btn">Курсты бастау</a>
+          </div>
+          <div class="course">
+            <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?q=80&w=800" alt="">
+    <h3>Киберқауіп- <br> сіздік негіздері</h3>
+    <p class="instructor">🧑‍💻 Мұғалім: <strong>Елдос Дилдос</strong></p>
+    <div class="meta">
+      <span class="price">💰 миллион 000 ₸</span>
+      <span class="rating">⭐ -100 / 10</span>
+    </div>
+    <p class="desc">Интернеттегі қауіптер мен қорғаныс әдістерін үйреніңіз:  
+      деректерді қорғау, шифрлау, желілік шабуылдар және этикалық хакерлік.</p>
+    <a href="#" class="btn">Курсты бастау</a>
+          </div>
+        </div>
+      </section>
+
+
+    <!-- рег -->
+ <div class="modal-bg" id="modal-bg" aria-hidden="true">
+  <div class="modal">
+    <h3>Тіркелу</h3>
+
+    <input id="reg-name" type="text" placeholder="Атыңыз">
+    <input id="reg-email" type="email" placeholder="Email">
+    <input id="reg-pass" type="password" placeholder="Құпиясөз">
+
+    <button onclick="registerUser()">Тіркелу</button>
+    <button class="close-btn" id="close-modal">Жабу</button>
+  </div>
+</div>
+
+
+    <!--Футер-->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Play&display=swap" rel="stylesheet"> 
+<footer class="">
+<div class="footer">
+<div class="row">
+<a href="#"><img class="footerLogo" id="footerLogo" src="img/logo.png" alt="Footer Logo" />
+  <p style="padding: center; font-size: 30px;">Aqyl.run</p></a>
+</div>
+
+<div class="row">
+<ul>
+<li><a href="course.html">Басты</a></li>
+<li><p style="color: red;">Курстар</p></li>
+<li><a href="link.html">Байланыс</a></li>
+</ul>
+</div>
+
+<div class="row">
+Aqyl.run Copyright © 2025  - All rights reserved by :  NET.runners
+</div>
+</div>
+</footer>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const body = document.body;
+  const lamp = document.getElementById('themeLamp');
+  const lampIcon = document.getElementById('lampIcon');
+  const footerLogo = document.getElementById('footerLogo');
+  const saved = localStorage.getItem('aqyl_theme');
+
+  // Функция обновления логотипов
+  function updateLogos(isDark) {
+    lampIcon.src = isDark ? 'img/logo.png' : 'img/darklogo.png';
+    footerLogo.src = isDark ? 'img/logo.png' : 'img/darklogo.png';
+  }
+
+  // Проверяем сохранённую тему
+  const isDarkStart = (saved === 'dark');
+  if (isDarkStart) body.classList.add('dark');
+  updateLogos(isDarkStart);
+
+  // Переключатель темы
+  lamp.addEventListener('click', () => {
+    body.classList.toggle('dark');
+    const isDark = body.classList.contains('dark');
+    localStorage.setItem('aqyl_theme', isDark ? 'dark' : 'light');
+    updateLogos(isDark);
+  });
+});
+</script>
+
+<!-- NetRunner Chatbase -->
+<script>
+(function(){
+  if(!window.chatbase || window.chatbase("getState")!=="initialized"){
+    window.chatbase=(...arguments)=>{
+      if(!window.chatbase.q){window.chatbase.q=[]}
+      window.chatbase.q.push(arguments)
+    };
+    window.chatbase=new Proxy(window.chatbase,{
+      get(target,prop){
+        if(prop==="q"){return target.q}
+        return(...args)=>target(prop,...args)
+      }
+    })
+  }
+  const onLoad=function(){
+    const script=document.createElement("script");
+    script.src="https://www.chatbase.co/embed.min.js";
+    script.id="4R2oIwqP2YlECxoPg1DG5";  // 👈 это твой ID NetRunner
+    script.domain="www.chatbase.co";
+    document.body.appendChild(script)
+  };
+  if(document.readyState==="complete"){onLoad()}
+  else{window.addEventListener("load",onLoad)}
+})();
+</script>
+
+    <script>
+(function() {
+  const patchBell = document.getElementById('patchBell');
+  const bellBtn = document.getElementById('bellBtn');
+  const patchPopup = document.getElementById('patchPopup');
+  const patchBadge = document.getElementById('patchBadge');
+  const patchListEl = document.getElementById('patchList');
+
+  // === Список старых версий сайта ===
+  const patchVersions = [
+    { date: '2025-9-25', name: 'v1 — Ең алғашқы қосылыс', url: 'https://kiyotaka696.github.io/aqyl.run/course_v1.html' },
+    { date: '2025-10-4', name: 'v2 — Шәмәлі болсын сырланған бөлігі', url: 'https://kiyotaka696.github.io/aqyl.run/course_v2.html' },
+    { date: '2025-10-9', name: 'v3 — Жаңартылған каталог', url: 'https://kiyotaka696.github.io/aqyl.run/course_v3.html' },
+    { date: '2025-10-19', name: 'Және де дәл қәзіргі сайтымыздың нұсқасы - NEW ERA', url: 'https://kiyotaka696.github.io/aqyl.run/course.html' },
+
+    // добавляй свои версии сюда
+  ];
+
+  patchVersions.forEach(patch => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = patch.url;
+    a.textContent = `${patch.date} — ${patch.name}`;
+    li.appendChild(a);
+    patchListEl.appendChild(li);
+  });
+
+  // === Функции открытия/закрытия ===
+  function openPopup() {
+    patchPopup.classList.add('show');
+    patchPopup.setAttribute('aria-hidden', 'false');
+    patchBell.setAttribute('aria-expanded', 'true');
+
+    // скрываем бейдж при первом открытии
+    if (patchBadge) {
+      patchBadge.style.opacity = '0';
+      patchBadge.style.transform = 'scale(.6)';
+      setTimeout(() => { if(patchBadge.parentNode) patchBadge.parentNode.removeChild(patchBadge); }, 220);
+    }
+  }
+
+  function closePopup() {
+    patchPopup.classList.remove('show');
+    patchPopup.setAttribute('aria-hidden', 'true');
+    patchBell.setAttribute('aria-expanded', 'false');
+  }
+
+  // === События ===
+  bellBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (patchPopup.classList.contains('show')) closePopup();
+    else openPopup();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!patchBell.contains(e.target)) closePopup();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopup();
+  });
+
+  bellBtn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      bellBtn.click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+
+
+
